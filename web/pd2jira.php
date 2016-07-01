@@ -1,9 +1,9 @@
 <?php
 $messages = json_decode(file_get_contents("php://input"));
 
-$email_address = getenv('EMAIL_ADDRESS');
-$pd_subdomain = getenv('PAGERDUTY_SUBDOMAIN');
-$pd_api_token = getenv('PAGERDUTY_API_TOKEN');
+$email_address = 'INSERT_JIRA_EMAIL';
+$pd_subdomain = 'INSERT_PD_SUBDOMAIN';
+$pd_api_token = 'INSERT_PD_ACCESS_TOKEN';
 
 if ($messages) foreach ($messages->messages as $webhook) {
   $webhook_type = $webhook->type;
@@ -67,40 +67,12 @@ if ($messages) foreach ($messages->messages as $webhook) {
         $data_json = json_encode($data);
         http_request($url, $data_json, "POST", "token", "", $pd_api_token);
       }
-      // $url = "$jira_url/rest/api/2/issue/";
-      //
-      // $data = array('fields'=>array('project'=>array('key'=>"$jira_project"),'summary'=>"$summary",'description'=>"A new PagerDuty ticket has been created.  {$trigger_summary_data}. Please go to $ticket_url to view it.", 'issuetype'=>array('name'=>"$jira_issue_type")));
-      // $data_json = json_encode($data);
-      //
-      // $return = http_request($url, $data_json, "POST", "basic", $jira_username, $jira_password);
-      // $status_code = $return['status_code'];
-      // $response = $return['response'];
-      // $response_obj = json_decode($response);
-      // $response_key = $response_obj->key;
-      //
-      // if ($status_code == "201") {
-      //   //Update the PagerDuty ticket with the JIRA ticket information.
-      //   $url = "https://$pd_subdomain.pagerduty.com/api/v1/incidents/$incident_id/notes";
-      //   $data = array('note'=>array('content'=>"JIRA ticket $response_key has been created.  You can view it at $jira_url/browse/$response_key."),'requester_id'=>"$pd_requester_id");
-      //   $data_json = json_encode($data);
-      //   http_request($url, $data_json, "POST", "token", "", $pd_api_token);
-      // }
-      // else {
-      //   //Log the error
-      //   error_log("Error: Returned status code " . $status_code . " with response " . $response);
-      //   //Update the PagerDuty ticket if the JIRA ticket isn't made.
-      //   $url = "https://$pd_subdomain.pagerduty.com/api/v1/incidents/$incident_id/notes";
-      //   $data = array('note'=>array('content'=>"A JIRA ticket failed to be created. $response"),'requester_id'=>"$pd_requester_id");
-      //   $data_json = json_encode($data);
-      //   http_request($url, $data_json, "POST", "token", "", $pd_api_token);
-      // }
       break;
     default:
       continue;
   }
 }
 
-// TODO remove the basic auth functionality after deprecating Jira HTTP requests
 function http_request($url, $data_json, $method, $auth_type, $username, $token) {
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
