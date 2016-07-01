@@ -58,6 +58,15 @@ if ($messages) foreach ($messages->messages as $webhook) {
         $data_json = json_encode($data);
         http_request($url, $data_json, "POST", "token", "", $pd_api_token);
       }
+      else {
+        //Log the error
+        error_log("Error: The email failed to send to the Jira handler.");
+        //Update the PagerDuty ticket if the JIRA ticket isn't made.
+        $url = "https://$pd_subdomain.pagerduty.com/api/v1/incidents/$incident_id/notes";
+        $data = array('note'=>array('content'=>"Error: The email failed to send to the Jira handler."),'requester_id'=>"$pd_requester_id");
+        $data_json = json_encode($data);
+        http_request($url, $data_json, "POST", "token", "", $pd_api_token);
+      }
       // $url = "$jira_url/rest/api/2/issue/";
       //
       // $data = array('fields'=>array('project'=>array('key'=>"$jira_project"),'summary'=>"$summary",'description'=>"A new PagerDuty ticket has been created.  {$trigger_summary_data}. Please go to $ticket_url to view it.", 'issuetype'=>array('name'=>"$jira_issue_type")));
